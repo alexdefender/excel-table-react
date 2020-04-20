@@ -1,0 +1,1 @@
+export const SET_SELECTED_CELL = 'SET_SELECTED_CELL';
