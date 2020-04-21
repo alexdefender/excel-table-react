@@ -1,1 +1,2 @@
 export const SET_SELECTED_CELL = 'SET_SELECTED_CELL';
+export const SET_TABLE_DATA = 'SET_TABLE_DATA';

@@ -6,7 +6,6 @@ import { InfoRow } from '../InfoRow';
 const TableInfo = () => {
   return (
     <div className='TableInfo'>
-      TableInfo
       <InfoRow />
     </div>
   );
