@@ -1,7 +1,8 @@
-import React, { useEffect, PureComponent } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import { connect, useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import './Cell.scss';
+import { isLink } from '../../utils/isLink';
 import { setSelectedCell } from '../../store/actions';
 import SelectedCell from '../SelectedCell/SelectedCell';
 
@@ -11,18 +12,23 @@ const Cell = (props) => {
   const { indexCell } = props;
   const { valueCell, error } = tableData[indexCell] || '';
 
-  // console.log({ tableData, indexCell, valueCell });
-
   const handleClick = (e) => {
     e.stopPropagation();
     dispatch(setSelectedCell(indexCell));
   };
   const isSelectedCell = indexCell === selectedCell;
+  const renderValueCell = isLink(valueCell) ? (
+    <a href={valueCell} target='_blank'>
+      {valueCell}
+    </a>
+  ) : (
+    valueCell
+  );
 
   return isSelectedCell ? (
     <SelectedCell />
   ) : (
-    <td onClick={handleClick}>{error || valueCell}</td>
+    <td onClick={handleClick}>{error || renderValueCell}</td>
   );
 };
 

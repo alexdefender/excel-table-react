@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-
 import PropTypes from 'prop-types';
 import './SelectedCell.scss';
+import { isLink } from '../../utils/isLink';
 import { setCellData, setErrorCell } from '../../store/actions';
 import { generateFormula } from '../../utils/generateFormula';
 
@@ -53,10 +53,18 @@ const SelectedCell = (props) => {
   //     };
   // });
 
+  const renderValueCell = isLink(valueCell) ? (
+    <a href={valueCell} target='_blank'>
+      {valueCell}
+    </a>
+  ) : (
+    valueCell
+  );
+
   const value = isEdit ? (
     <input autoFocus defaultValue={editValueCell} onChange={handleChange} />
   ) : (
-    valueCell
+    renderValueCell
   );
 
   return (

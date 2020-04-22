@@ -1,4 +1,5 @@
 import store from '../store';
+import { isLink } from './isLink';
 
 let formulaName = '';
 let functionFormula = '';
@@ -53,8 +54,7 @@ const formulas = {
   },
   '=HYPERLINK(': function hyperlink(...args) {
     if (args.length > 1) return '#ERROR!';
-    const re = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g;
-    const res = re.test(args[0].toLowerCase());
+    const res = isLink(args[0]);
     if (res) return args[0].toLowerCase();
     return '#ERROR!';
 
