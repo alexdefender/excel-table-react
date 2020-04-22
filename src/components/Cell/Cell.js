@@ -9,7 +9,7 @@ const Cell = (props) => {
   const dispatch = useDispatch();
   const { selectedCell, tableData } = useSelector((store) => store);
   const { indexCell } = props;
-  const { valueCell } = tableData[indexCell] || '';
+  const { valueCell, error } = tableData[indexCell] || '';
 
   // console.log({ tableData, indexCell, valueCell });
 
@@ -22,7 +22,7 @@ const Cell = (props) => {
   return isSelectedCell ? (
     <SelectedCell />
   ) : (
-    <td onClick={handleClick}>{valueCell}</td>
+    <td onClick={handleClick}>{error || valueCell}</td>
   );
 };
 
