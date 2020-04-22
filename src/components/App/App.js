@@ -18,7 +18,6 @@ const setDefaultTableData = (indexCell) => {
     formulaCell: '',
     type: 'string',
     currency: '',
-    error: '',
   };
 };
 
@@ -29,7 +28,7 @@ const generateTable = () => {
   const table = (
     <Table>
       {countRows.map((row, i) => (
-        <Row key={`row-${i}`} indexRow={i}>
+        <Row key={`row-${i}`}>
           {countCells.map((cell, j) => {
             if (i === 0) {
               if (j === 0) {
@@ -37,7 +36,7 @@ const generateTable = () => {
               }
               return <FixedCell key={`cell-${j}`} value={cell} />;
             } else if (j === 0) {
-              return <FixedCell key={`cell-${j}`} value={i} />;
+              return <FixedCell key={`cell-${j}`} value={i.toString()} />;
             }
             const indexCell = `${cell}${i}`;
             setDefaultTableData(indexCell);
@@ -57,6 +56,7 @@ const App = () => {
 
   useEffect(() => {
     dispatch(setAllTableData(tableData));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

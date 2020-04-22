@@ -4,7 +4,6 @@ import {
   SET_CELL_DATA,
   SET_TYPE_CELL,
   SET_CURRENCY_CELL,
-  SET_ERROR_CELL,
 } from './constants';
 
 const initialState = {
@@ -15,7 +14,6 @@ const initialState = {
       formulaCell: '',
       type: '',
       currency: '',
-      error: '',
     },
   },
 };
@@ -63,17 +61,6 @@ const reducer = (state = initialState, action) => {
           [selectedCell]: {
             ...tableData[selectedCell],
             currency: action.payload,
-          },
-        },
-      };
-    case SET_ERROR_CELL:
-      return {
-        ...state,
-        tableData: {
-          ...tableData,
-          [selectedCell]: {
-            ...tableData[selectedCell],
-            error: action.payload,
           },
         },
       };

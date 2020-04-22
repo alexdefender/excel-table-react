@@ -1,11 +1,19 @@
+@import '../../index';
+
 .TypeData {
   display: flex;
-  // justify-content: center;
   align-items: center;
 
   input {
-    width: 300px;
+    width: 500px;
     height: 25px;
     outline: none;
+  }
+
+  select {
+    margin: 0 10px;
+    height: 25px;
+    background-color: transparent;
+    border: $border-format;
   }
 }

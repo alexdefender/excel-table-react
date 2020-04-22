@@ -8,7 +8,6 @@ import './SelectTypeData.scss';
 const SelectTypeData = () => {
   const dispatch = useDispatch();
   const { selectedCell, tableData } = useSelector((store) => store);
-
   const { type } = tableData[selectedCell] || 'string';
   const { currency } = tableData[selectedCell] || '';
   const isCurrency =
@@ -18,6 +17,7 @@ const SelectTypeData = () => {
     if (isCurrency && !currency) {
       dispatch(setCurrencyCell(currencies[0]));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isCurrency]);
 
   const handleChange = (e) => {
@@ -28,6 +28,7 @@ const SelectTypeData = () => {
       dispatch(setCurrencyCell(value));
     } else {
       dispatch(setTypeCell(value));
+      dispatch(setCurrencyCell(''));
     }
   };
 

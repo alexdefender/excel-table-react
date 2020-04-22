@@ -1,5 +1,5 @@
 import store from '../store';
-import { isLink } from './isLink';
+import isLink from './isLink';
 
 let formulaName = '';
 let functionFormula = '';
@@ -29,7 +29,7 @@ const formulas = {
   },
   '=AVERAGE(': function average(...args) {
     const sum = formulas['=SUM('](...args);
-    let argsLength = arguments.length;
+    let argsLength = args.length;
     const lastElement = args.pop();
 
     if (lastElement === '') {
@@ -38,7 +38,12 @@ const formulas = {
       return '#ERROR!';
     }
 
-    return sum / argsLength;
+    const result = (sum / argsLength)
+      .toFixed(2)
+      .toString()
+      .replace(/(\.[0-9]*[1-9])0+$|\.0*$/, '$1');
+
+    return isNaN(result) ? '#ERROR!' : result;
   },
   '=CONCAT(': function concat(...args) {
     const { tableData } = store.getState();
@@ -62,8 +67,9 @@ const formulas = {
   },
 };
 
-export const generateFormula = (val) => {
-  const value = val.toUpperCase();
+export default function generateFormula(val) {
+  let value = val.toUpperCase();
+  value.slice(-1);
   let result = null;
 
   if (hasFormula(value)) {
@@ -72,20 +78,15 @@ export const generateFormula = (val) => {
       result = functionFormula(...argumentsFormula);
     }
   }
+
+  if (value[value.length - 1] !== ')') value += ')';
   console.log({ result, value });
 
-  // if (!valueUpper.lastIndex(')')) valueUpper += ')';
-
   return {
-    valueCell: result,
+    newValueCell: result,
     formulaCell: value,
   };
-
-  // =SUM()
-  // =AVERAGE(…)
-  // =CONCAT(…)
-  // =HYPERLINK(…)
-};
+}
 
 function hasFormula(value) {
   return Object.keys(formulas).some((el) => {
@@ -105,10 +106,6 @@ function transformValueToArgFormula(value) {
     .replace(/; +|;+| ; +/g, ';')
     .replace(formulaName, '')
     .split(';');
-}
-
-function splitArguments(args) {
-  return;
 }
 
 function isTypesNumOrCurrency(selectedCell, nextCell) {

@@ -2,11 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import './Row.scss';
 
-const Row = (props) => {
-  const { children } = props;
-
-  return <tr>{children}</tr>;
-};
+const Row = ({ children }) => <tr>{children}</tr>;
 
 Row.propTypes = {
   children: PropTypes.node,

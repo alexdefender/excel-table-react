@@ -1,20 +1,37 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import PropTypes from 'prop-types';
 import './SelectedCell.scss';
-import { isLink } from '../../utils/isLink';
-import { setCellData, setErrorCell } from '../../store/actions';
-import { generateFormula } from '../../utils/generateFormula';
+import isLink from '../../utils/isLink';
+import { setCellData } from '../../store/actions';
+import generateFormula from '../../utils/generateFormula';
+import generateCurrencyFormat from '../../utils/generateCurrencyFormat';
 
-const SelectedCell = (props) => {
+const SelectedCell = () => {
   const [isEdit, setIsEdit] = useState(false);
   const dispatch = useDispatch();
   const { selectedCell, tableData } = useSelector((store) => store);
-  const dataCell = tableData[selectedCell];
+  let { formulaCell, valueCell, currency } = tableData[selectedCell];
+  const editValueCell = formulaCell || valueCell;
 
-  const editValueCell = dataCell?.formulaCell || dataCell?.valueCell || '';
+  const clearCellData = () => {
+    dispatch(setCellData({ valueCell: '', formulaCell: '' }));
+  };
 
-  const valueCell = dataCell?.valueCell;
+  const handleKeyDown = (e) => {
+    e.stopPropagation();
+    if (e.keyCode === 8) {
+      clearCellData();
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleDoubleClick = (e) => {
     setIsEdit(true);
@@ -23,38 +40,26 @@ const SelectedCell = (props) => {
   const handleChange = (e) => {
     e.stopPropagation();
     const { value } = e.target;
-    const { error } = dataCell;
-
     let cellData;
 
     if (value.includes('=')) {
-      const { valueCell, formulaCell } = generateFormula(value);
+      const { newValueCell, formulaCell } = generateFormula(value);
 
-      if (valueCell === '#ERROR!') {
-        dispatch(setErrorCell(valueCell));
-      } else {
-        dispatch(setErrorCell(''));
-      }
-
-      cellData = { valueCell, formulaCell };
+      cellData = { valueCell: newValueCell, formulaCell };
     } else {
       cellData = { valueCell: value, formulaCell: '' };
     }
 
     dispatch(setCellData(cellData));
-    // if (error) dispatch(setErrorCell(''));
   };
 
-  // useEffect(() => {
-  //   if (input)
-  //     return () => {
-  //       const cellData = { [selectedCell]: input.value };
-  //       dispatch(setCellData(cellData));
-  //     };
-  // });
+  valueCell =
+    valueCell && currency
+      ? generateCurrencyFormat(valueCell, currency)
+      : valueCell;
 
   const renderValueCell = isLink(valueCell) ? (
-    <a href={valueCell} target='_blank'>
+    <a href={valueCell} target='_blank' rel='noopener noreferrer'>
       {valueCell}
     </a>
   ) : (
@@ -68,15 +73,14 @@ const SelectedCell = (props) => {
   );
 
   return (
-    <td className='SelectedCell' onDoubleClick={handleDoubleClick}>
+    <td
+      id='SelectedCell'
+      className='SelectedCell'
+      onDoubleClick={handleDoubleClick}
+    >
       {value}
     </td>
   );
-};
-
-SelectedCell.propTypes = {
-  selectedCell: PropTypes.string,
-  valueCell: PropTypes.string,
 };
 
 export default SelectedCell;

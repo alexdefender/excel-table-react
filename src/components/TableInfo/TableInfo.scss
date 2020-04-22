@@ -1,4 +1,9 @@
+@import '../../index';
+
 .TableInfo {
   display: grid;
-  grid-template-columns: 0.5fr 1fr 0.5fr;
+  grid-template-columns: 0.2fr 1fr 0.2fr;
+  border-top: $border-format;
+  border-right: $border-format;
+  border-left: $border-format;
 }

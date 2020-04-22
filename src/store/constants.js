@@ -3,4 +3,3 @@ export const SET_ALL_TABLE_DATA = 'SET_ALL_TABLE_DATA';
 export const SET_CELL_DATA = 'SET_CELL_DATA';
 export const SET_TYPE_CELL = 'SET_TYPE_CELL';
 export const SET_CURRENCY_CELL = 'SET_CURRENCY_CELL';
-export const SET_ERROR_CELL = 'SET_ERROR_CELL';

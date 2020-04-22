@@ -4,7 +4,6 @@ import {
   SET_CELL_DATA,
   SET_TYPE_CELL,
   SET_CURRENCY_CELL,
-  SET_ERROR_CELL,
 } from './constants';
 
 export const setSelectedCell = (payload) => ({
@@ -31,9 +30,3 @@ export const setCurrencyCell = (payload) => ({
   type: SET_CURRENCY_CELL,
   payload,
 });
-
-export const setErrorCell = (payload) => ({
-  type: SET_ERROR_CELL,
-  payload,
-});
-

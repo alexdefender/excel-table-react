@@ -1,11 +1,14 @@
+@import '../../index';
+
 .InfoRow {
   display: flex;
   justify-content: center;
   align-items: center;
 
   input {
-    width: 300px;
+    width: 500px;
     height: 25px;
     outline: none;
+    border: $border-format;
   }
 }

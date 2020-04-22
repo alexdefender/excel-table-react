@@ -1,9 +1,11 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import './FixedCell.scss';
 
-const CellFixed = (props) => {
-  const { value } = props;
-  return <th>{value}</th>;
+const CellFixed = ({ value }) => <th>{value}</th>;
+
+CellFixed.propTypes = {
+  value: PropTypes.string,
 };
 
 export default CellFixed;
