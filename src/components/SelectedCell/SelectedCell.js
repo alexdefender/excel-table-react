@@ -3,12 +3,20 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import PropTypes from 'prop-types';
 import './SelectedCell.scss';
-import { setTableData } from '../../store/actions';
+import { setCellData } from '../../store/actions';
+import { generateFormula } from '../../utils/generateFormula';
 
 const SelectedCell = (props) => {
   const [isEdit, setIsEdit] = useState(false);
   const dispatch = useDispatch();
-  const { selectedCell, valueCell } = props;
+  const { selectedCell, tableData } = useSelector((store) => store);
+
+  const editValueCell = tableData[selectedCell]
+    ? tableData[selectedCell].formulaCell || tableData[selectedCell].valueCell
+    : '';
+
+  const valueCell =
+    tableData[selectedCell] && tableData[selectedCell].valueCell;
 
   const handleDoubleClick = (e) => {
     setIsEdit(true);
@@ -16,20 +24,30 @@ const SelectedCell = (props) => {
 
   const handleChange = (e) => {
     e.stopPropagation();
-    const cellData = { [selectedCell]: e.target.value };
-    dispatch(setTableData(cellData));
+    const { value } = e.target;
+
+    let cellData;
+
+    if (value.includes('=')) {
+      const { valueCell, formulaCell } = generateFormula(value);
+      cellData = { valueCell, formulaCell };
+    } else {
+      cellData = { valueCell: value, formulaCell: '' };
+    }
+
+    dispatch(setCellData(cellData));
   };
 
   // useEffect(() => {
   //   if (input)
   //     return () => {
   //       const cellData = { [selectedCell]: input.value };
-  //       dispatch(setTableData(cellData));
+  //       dispatch(setCellData(cellData));
   //     };
   // });
 
   const value = isEdit ? (
-    <input autoFocus defaultValue={valueCell} onChange={handleChange} />
+    <input autoFocus defaultValue={editValueCell} onChange={handleChange} />
   ) : (
     valueCell
   );

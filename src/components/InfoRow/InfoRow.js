@@ -5,11 +5,14 @@ import './InfoRow.scss';
 
 const InfoRow = () => {
   const { selectedCell, tableData } = useSelector((store) => store);
-  const valueRow = tableData[selectedCell];
+
+  const valueCell = tableData[selectedCell]
+    ? tableData[selectedCell].formulaCell || tableData[selectedCell].valueCell
+    : '';
 
   return (
     <div className='InfoRow'>
-      <input type='text' defaultValue={valueRow} />
+      <input type='text' defaultValue={valueCell} />
     </div>
   );
 };

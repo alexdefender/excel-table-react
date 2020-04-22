@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import './App.scss';
+import { setAllTableData } from '../../store/actions';
 import { TableWrap } from '../TableWrap';
 import { TableInfo } from '../TableInfo';
 import { Table } from '../Table';
@@ -8,6 +10,17 @@ import { Cell } from '../Cell';
 import { FixedCell } from '../FixedCell';
 
 const alphabet = ' ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+const tableData = {};
+
+const setDefaultTableData = (indexCell) => {
+  tableData[indexCell] = {
+    valueCell: '',
+    formulaCell: '',
+    type: 'string',
+    currency: '',
+    error: '',
+  };
+};
 
 const generateTable = () => {
   const countRows = Array(10).fill(null);
@@ -26,7 +39,9 @@ const generateTable = () => {
             } else if (j === 0) {
               return <FixedCell key={`cell-${j}`} value={i} />;
             }
-            return <Cell key={`cell-${j}`} indexCell={`${cell}${i}`} />;
+            const indexCell = `${cell}${i}`;
+            setDefaultTableData(indexCell);
+            return <Cell key={`cell-${j}`} {...{ indexCell }} />;
           })}
         </Row>
       ))}
@@ -37,8 +52,12 @@ const generateTable = () => {
 };
 
 const App = () => {
+  const dispatch = useDispatch();
   const table = generateTable();
-  console.log('app');
+
+  useEffect(() => {
+    dispatch(setAllTableData(tableData));
+  }, []);
 
   return (
     <div className='Container'>
