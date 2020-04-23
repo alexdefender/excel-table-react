@@ -9,17 +9,18 @@ import {
 const initialState = {
   selectedCell: '',
   tableData: {
-    '': {
-      valueCell: '',
-      formulaCell: '',
-      type: '',
-      currency: '',
-    },
+    // '': {
+    //   valueCell: '',
+    //   formulaCell: '',
+    //   type: '',
+    //   currency: '',
+    // },
   },
 };
 
 const reducer = (state = initialState, action) => {
-  const { selectedCell, tableData } = state;
+  const { tableData } = state;
+  let cell = null;
 
   switch (action.type) {
     case SET_SELECTED_CELL:
@@ -32,35 +33,38 @@ const reducer = (state = initialState, action) => {
         },
       };
     case SET_CELL_DATA:
+      cell = Object.keys(action.payload)[0];
       return {
         ...state,
         tableData: {
           ...tableData,
-          [selectedCell]: {
-            ...tableData[selectedCell],
-            ...action.payload,
+          [cell]: {
+            ...tableData[cell],
+            ...action.payload[cell],
           },
         },
       };
     case SET_TYPE_CELL:
+      cell = Object.keys(action.payload)[0];
       return {
         ...state,
         tableData: {
           ...tableData,
-          [selectedCell]: {
-            ...tableData[selectedCell],
-            type: action.payload,
+          [cell]: {
+            ...tableData[cell],
+            ...action.payload[cell],
           },
         },
       };
     case SET_CURRENCY_CELL:
+      cell = Object.keys(action.payload)[0];
       return {
         ...state,
         tableData: {
           ...tableData,
-          [selectedCell]: {
-            ...tableData[selectedCell],
-            currency: action.payload,
+          [cell]: {
+            ...tableData[cell],
+            ...action.payload[cell],
           },
         },
       };

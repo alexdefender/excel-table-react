@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import './Cell.scss';
-import isLink from '../../utils/isLink';
+import isUrlValid from '../../utils/isUrlValid';
 import generateFormula from '../../utils/generateFormula';
 import generateCurrencyFormat from '../../utils/generateCurrencyFormat';
 import { setSelectedCell, setCellData } from '../../store/actions';
@@ -13,10 +13,15 @@ const Cell = (props) => {
   const { indexCell } = props;
   const [isEdit, setIsEdit] = useState(false);
 
+  // if (tableData[indexCell] === undefined) return null;
+  const { valueCell, type, currency, formulaCell } = tableData[indexCell] || {};
+
   const isSelectedCell = indexCell === selectedCell;
 
   const clearCellData = () => {
-    dispatch(setCellData({ valueCell: '', formulaCell: '' }));
+    dispatch(
+      setCellData({ [selectedCell]: { valueCell: '', formulaCell: '' } })
+    );
   };
 
   function handleKeyDown(e) {
@@ -40,8 +45,27 @@ const Cell = (props) => {
     setIsEdit(false);
   }, [selectedCell]);
 
-  if (tableData[indexCell] === undefined) return null;
-  const { valueCell, currency, formulaCell } = tableData[indexCell];
+  useEffect(() => {
+    for (const cell in tableData) {
+      if (tableData.hasOwnProperty(cell)) {
+        tableData[cell].formulaCell !== '' &&
+          updateCellData(tableData[cell].formulaCell, cell);
+      }
+    }
+  }, [selectedCell, type]);
+
+  function updateCellData(value, cell) {
+    let cellData;
+
+    if (value.includes('=')) {
+      const { newValueCell, formulaCell } = generateFormula(value, cell);
+      cellData = { [cell]: { valueCell: newValueCell, formulaCell } };
+    } else {
+      cellData = { [cell]: { valueCell: value, formulaCell: '' } };
+    }
+
+    dispatch(setCellData(cellData));
+  }
 
   const handleClick = (e) => {
     e.stopPropagation();
@@ -55,16 +79,7 @@ const Cell = (props) => {
   const handleChange = (e) => {
     e.stopPropagation();
     const { value } = e.target;
-    let cellData;
-
-    if (value.includes('=')) {
-      const { newValueCell, formulaCell } = generateFormula(value);
-      cellData = { valueCell: newValueCell, formulaCell };
-    } else {
-      cellData = { valueCell: value, formulaCell: '' };
-    }
-
-    dispatch(setCellData(cellData));
+    updateCellData(value, selectedCell);
   };
 
   const generateValueCell = (value) => {
@@ -72,7 +87,7 @@ const Cell = (props) => {
 
     if (value && currency) {
       newValue = generateCurrencyFormat(value, currency);
-    } else if (isLink(value)) {
+    } else if (isUrlValid(value)) {
       newValue = (
         <a href={value} target='_blank' rel='noopener noreferrer'>
           {value}

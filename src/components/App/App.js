@@ -22,8 +22,8 @@ const setDefaultTableData = (indexCell) => {
 };
 
 const generateTable = () => {
-  const countRows = Array(10).fill(null);
-  const countCells = alphabet.split('').slice(0, 13);
+  const countRows = Array(3).fill(null);
+  const countCells = alphabet.split('').slice(0, 3);
 
   const table = (
     <Table>

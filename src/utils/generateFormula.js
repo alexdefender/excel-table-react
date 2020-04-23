@@ -1,13 +1,13 @@
 import store from '../store';
-import isLink from './isLink';
+import isUrlValid from './isUrlValid';
 
 let formulaName = '';
 let functionFormula = '';
+let selectedCell = '';
 
 const formulas = {
   '=SUM(': function sum(...args) {
-    const { tableData, selectedCell } = store.getState();
-
+    const { tableData } = store.getState();
     const newArgs = args.map((el) => {
       const isCorrectTypes = isTypesNumOrCurrency(
         tableData[selectedCell],
@@ -16,6 +16,9 @@ const formulas = {
 
       if (isCorrectTypes) {
         if (tableData[el]) {
+          if (tableData[selectedCell].type !== tableData[el].type) {
+            return false;
+          }
           return tableData[el].valueCell;
         }
         return isNaN(el) ? false : el;
@@ -29,14 +32,15 @@ const formulas = {
   },
   '=AVERAGE(': function average(...args) {
     const sum = formulas['=SUM('](...args);
-    let argsLength = args.length;
-    const lastElement = args.pop();
+    const { tableData } = store.getState();
 
-    if (lastElement === '') {
-      argsLength -= 1;
-    } else if (isNaN(lastElement)) {
-      return '#ERROR!';
-    }
+    const argsLength = args.reduce((sum, el) => {
+      if (el !== '' && !isNaN(el)) return ++sum;
+      if (tableData[el] !== undefined && tableData[el].valueCell !== '') {
+        return ++sum;
+      }
+      return sum;
+    }, 0);
 
     const result = (sum / argsLength)
       .toFixed(2)
@@ -59,18 +63,19 @@ const formulas = {
   },
   '=HYPERLINK(': function hyperlink(...args) {
     if (args.length > 1) return '#ERROR!';
-    const res = isLink(args[0]);
+    const res = isUrlValid(args[0].toLowerCase());
     if (res) return args[0].toLowerCase();
     return '#ERROR!';
 
-    // =HYPERLINK(http://site.ru
+    // =HYPERLINK(ffhttp://site.ru
   },
 };
 
-export default function generateFormula(val) {
+export default function generateFormula(val, cell) {
   let value = val.toUpperCase();
   value.slice(-1);
   let result = null;
+  selectedCell = cell;
 
   if (hasFormula(value)) {
     const argumentsFormula = transformValueToArgFormula(value);
@@ -80,7 +85,6 @@ export default function generateFormula(val) {
   }
 
   if (value[value.length - 1] !== ')') value += ')';
-  console.log({ result, value });
 
   return {
     newValueCell: result,
@@ -108,14 +112,14 @@ function transformValueToArgFormula(value) {
     .split(';');
 }
 
-function isTypesNumOrCurrency(selectedCell, nextCell) {
+function isTypesNumOrCurrency(cell, nextCell) {
   const types = ['number', 'currency'];
-  const typeSelectedCell = selectedCell.type;
+  const typeSelectedCell = cell.type;
   const typeNextCell = nextCell?.type;
 
   if (types.includes(typeSelectedCell) && types.includes(typeNextCell))
     return true;
-  if (typeSelectedCell === typeNextCell) return true;
+  // if (typeSelectedCell === typeNextCell) return true;
   if (types.includes(typeSelectedCell)) return true;
   return false;
 }

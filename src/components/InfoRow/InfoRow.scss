@@ -1,6 +1,7 @@
 @import '../../index';
 
 .InfoRow {
+  grid-area: infoRow;
   display: flex;
   justify-content: center;
   align-items: center;

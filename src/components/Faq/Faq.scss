@@ -1,0 +1,33 @@
+.Faq {
+  position: relative;
+  grid-area: faq;
+  display: flex;
+  align-items: center;
+
+  > :first-child {
+    color: #0074e4;
+    font-size: 20px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  > :nth-child(2) {
+    position: absolute;
+    top: 40px;
+    right: 10px;
+    width: 500px;
+    min-width: 300px;
+    padding: 10px;
+    border: 1px solid #0074e4;
+    border-radius: 10px;
+    background-color: white;
+
+    div {
+      margin: 20px 0;
+
+      > :first-child {
+        font-weight: 700;
+      }
+    }
+  }
+}

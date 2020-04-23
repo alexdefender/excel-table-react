@@ -15,20 +15,24 @@ const SelectTypeData = () => {
 
   useEffect(() => {
     if (isCurrency && !currency) {
-      dispatch(setCurrencyCell(currencies[0]));
+      dispatch(
+        setCurrencyCell({ [selectedCell]: { currency: currencies[0] } })
+      );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isCurrency]);
+
+  if (selectedCell === '') return null;
 
   const handleChange = (e) => {
     e.stopPropagation();
     const { value } = e.target;
 
     if (currencies.includes(value)) {
-      dispatch(setCurrencyCell(value));
+      dispatch(setCurrencyCell({ [selectedCell]: { currency: value } }));
     } else {
-      dispatch(setTypeCell(value));
-      dispatch(setCurrencyCell(''));
+      dispatch(setTypeCell({ [selectedCell]: { type: value } }));
+      dispatch(setCurrencyCell({ [selectedCell]: { currency: '' } }));
     }
   };
 
