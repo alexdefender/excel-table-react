@@ -2,12 +2,25 @@
 
 td {
   box-sizing: border-box;
-  width: 150px;
-  min-width: 50px;
+  max-width: 100px;
+  width: 100px;
   height: 25px;
   padding-left: 5px;
   border: $border-format;
   cursor: cell;
   overflow: hidden;
   text-overflow: ellipsis;
+
+  input {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    outline: none;
+  }
+}
+
+.SelectedCell {
+  border: 2px solid #0074e4;
+
+
 }

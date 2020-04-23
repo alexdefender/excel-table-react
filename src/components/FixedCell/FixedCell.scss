@@ -3,8 +3,9 @@
 th {
   box-sizing: border-box;
   border: $border-format;
-  width: 50px;
-  min-width: 25px;
+  width: 30px;
+  max-width: 30px;
+  min-width: 30px;
   height: 25px;
   background-color: #eeeeee;
 }

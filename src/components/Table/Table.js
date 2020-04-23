@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import './Table.scss';
 
 const Table = ({ children }) => (
-  <table>
+  <table id='table'>
     <tbody>{children}</tbody>
   </table>
 );
