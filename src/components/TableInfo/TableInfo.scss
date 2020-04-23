@@ -2,7 +2,7 @@
 
 .TableInfo {
   display: grid;
-  grid-template-areas: ". infoRow faq";
+  grid-template-areas: '. infoRow faq';
   grid-template-columns: 0.2fr 1fr 0.2fr;
   border-top: $border-format;
   border-right: $border-format;

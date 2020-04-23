@@ -66,31 +66,8 @@ const formulas = {
     const res = isUrlValid(args[0].toLowerCase());
     if (res) return args[0].toLowerCase();
     return '#ERROR!';
-
-    // =HYPERLINK(ffhttp://site.ru
   },
 };
-
-export default function generateFormula(val, cell) {
-  let value = val.toUpperCase();
-  value.slice(-1);
-  let result = null;
-  selectedCell = cell;
-
-  if (hasFormula(value)) {
-    const argumentsFormula = transformValueToArgFormula(value);
-    if (argumentsFormula.length > 0) {
-      result = functionFormula(...argumentsFormula);
-    }
-  }
-
-  if (value[value.length - 1] !== ')') value += ')';
-
-  return {
-    newValueCell: result,
-    formulaCell: value,
-  };
-}
 
 function hasFormula(value) {
   return Object.keys(formulas).some((el) => {
@@ -119,7 +96,27 @@ function isTypesNumOrCurrency(cell, nextCell) {
 
   if (types.includes(typeSelectedCell) && types.includes(typeNextCell))
     return true;
-  // if (typeSelectedCell === typeNextCell) return true;
   if (types.includes(typeSelectedCell)) return true;
   return false;
+}
+
+export default function generateFormula(val, cell) {
+  let value = val.toUpperCase();
+  value.slice(-1);
+  let result = null;
+  selectedCell = cell;
+
+  if (hasFormula(value)) {
+    const argumentsFormula = transformValueToArgFormula(value);
+    if (argumentsFormula.length > 0) {
+      result = functionFormula(...argumentsFormula);
+    }
+  }
+
+  if (value[value.length - 1] !== ')') value += ')';
+
+  return {
+    newValueCell: result,
+    formulaCell: value,
+  };
 }

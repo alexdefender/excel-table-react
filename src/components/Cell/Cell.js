@@ -1,60 +1,82 @@
-import React, { useState, useEffect } from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { useDispatch, useSelector } from 'react-redux';
+import { connect } from 'react-redux';
 import './Cell.scss';
 import isUrlValid from '../../utils/isUrlValid';
 import generateFormula from '../../utils/generateFormula';
 import generateCurrencyFormat from '../../utils/generateCurrencyFormat';
 import { setSelectedCell, setCellData } from '../../store/actions';
 
-const Cell = (props) => {
-  const dispatch = useDispatch();
-  const { selectedCell, tableData } = useSelector((store) => store);
-  const { indexCell } = props;
-  const [isEdit, setIsEdit] = useState(false);
+class Cell extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      isEdit: false,
+    };
+    this.refInput = null;
+  }
 
-  // if (tableData[indexCell] === undefined) return null;
-  const { valueCell, type, currency, formulaCell } = tableData[indexCell] || {};
+  shouldComponentUpdate(nextProps, nextState) {
+    const { indexCell, selectedCell, tableData } = this.props;
+    const { isEdit } = this.state;
+    // изменение выделенной ячейки
+    if (
+      nextProps.indexCell === nextProps.selectedCell ||
+      indexCell === selectedCell
+    ) {
+      return true;
+    }
 
-  const isSelectedCell = indexCell === selectedCell;
+    if (isEdit !== nextState.isEdit) {
+      return true;
+    }
 
-  const clearCellData = () => {
-    dispatch(
-      setCellData({ [selectedCell]: { valueCell: '', formulaCell: '' } })
-    );
-  };
+    // изменение типа данных или содержимого в ячейке
+    if (
+      JSON.stringify(tableData[indexCell]) !==
+      JSON.stringify(nextProps.tableData[nextProps.indexCell])
+    ) {
+      return true;
+    }
 
-  function handleKeyDown(e) {
-    e.stopPropagation();
-    if (e.keyCode === 8 || e.keyCode === 46) {
-      clearCellData();
+    return false;
+  }
+
+  componentDidMount() {
+    document.addEventListener('keydown', this.handleKeyDown);
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    const { indexCell, selectedCell, tableData } = this.props;
+    const { isEdit } = this.state;
+
+    // изменилась выбранная ячейка
+    if (prevProps.selectedCell !== selectedCell) {
+      // отменить редактирование предыдушей ячейки
+      if (isEdit) {
+        this.setState({ isEdit: false });
+      }
+
+      // при клике мышки обновить данные ячейки
+      if (this.refInput !== null) {
+        const { value } = this.refInput;
+        this.updateCellData(value, indexCell);
+      }
+
+      this.updateFormulasData();
+    }
+
+    // изменился тип ячейки
+    if (prevProps.tableData[indexCell]?.type !== tableData[indexCell]?.type) {
+      this.updateFormulasData();
     }
   }
 
-  useEffect(() => {
-    if (isSelectedCell) {
-      document.addEventListener('keydown', handleKeyDown);
+  componentWillUnmount() {
+    document.removeEventListener('keydown', this.handleKeyDown);
+  }
 
-      return () => {
-        document.removeEventListener('keydown', handleKeyDown);
-      };
-    }
-  });
-
-  useEffect(() => {
-    setIsEdit(false);
-  }, [selectedCell]);
-
-  useEffect(() => {
-    for (const cell in tableData) {
-      if (tableData.hasOwnProperty(cell)) {
-        tableData[cell].formulaCell !== '' &&
-          updateCellData(tableData[cell].formulaCell, cell);
-      }
-    }
-  }, [selectedCell, type]);
-
-  function updateCellData(value, cell) {
+  updateCellData = (value, cell) => {
     let cellData;
 
     if (value.includes('=')) {
@@ -64,66 +86,123 @@ const Cell = (props) => {
       cellData = { [cell]: { valueCell: value, formulaCell: '' } };
     }
 
-    dispatch(setCellData(cellData));
-  }
+    this.props.setCellData(cellData);
+  };
 
-  const handleClick = (e) => {
+  updateFormulasData = () => {
+    const { tableData } = this.props;
+
+    for (const cell in tableData) {
+      if (
+        tableData.hasOwnProperty(cell) &&
+        tableData[cell].formulaCell !== ''
+      ) {
+        this.updateCellData(tableData[cell].formulaCell, cell);
+      }
+    }
+  };
+
+  clearCellData = () => {
+    this.props.setCellData({
+      [this.props.selectedCell]: { valueCell: '', formulaCell: '' },
+    });
+  };
+
+  handleKeyDown = (e) => {
     e.stopPropagation();
-    dispatch(setSelectedCell(indexCell));
+    const { indexCell, selectedCell } = this.props;
+    const { isEdit } = this.state;
+
+    // очистить ячейку если выделенная и не редактирование и нажата кнопка del или backspace
+    if (
+      indexCell === selectedCell &&
+      !isEdit &&
+      (e.keyCode === 8 || e.keyCode === 46)
+    ) {
+      this.clearCellData();
+    }
+    // нажат enter обновить данные ячейки и формул
+    if (e.keyCode === 13 && this.refInput !== null) {
+      const { value } = this.refInput;
+      this.updateCellData(value, selectedCell);
+      this.updateFormulasData();
+      if (isEdit) this.setState({ isEdit: false });
+    }
   };
 
-  const handleDoubleClick = (e) => {
-    setIsEdit(true);
-  };
-
-  const handleChange = (e) => {
+  handleClick = (e) => {
     e.stopPropagation();
-    const { value } = e.target;
-    updateCellData(value, selectedCell);
+    this.props.setSelectedCell(this.props.indexCell);
   };
 
-  const generateValueCell = (value) => {
-    let newValue = value;
+  handleDoubleClick = (e) => {
+    e.stopPropagation();
+    this.setState({ isEdit: true });
+  };
 
-    if (value && currency) {
-      newValue = generateCurrencyFormat(value, currency);
-    } else if (isUrlValid(value)) {
+  generateValueCell = () => {
+    const { tableData, indexCell } = this.props;
+    const { isEdit } = this.state;
+    const { currency, formulaCell, valueCell } = tableData[indexCell];
+    let newValue = valueCell;
+
+    if (valueCell && currency) {
+      newValue = generateCurrencyFormat(valueCell, currency);
+    }
+
+    if (isUrlValid(valueCell)) {
       newValue = (
-        <a href={value} target='_blank' rel='noopener noreferrer'>
-          {value}
+        <a href={valueCell} target='_blank' rel='noopener noreferrer'>
+          {valueCell}
         </a>
+      );
+    }
+
+    if (isEdit) {
+      newValue = (
+        <input
+          autoFocus
+          defaultValue={formulaCell || valueCell}
+          ref={(r) => (this.refInput = r)}
+        />
       );
     }
 
     return newValue;
   };
 
-  const correctValueCell = generateValueCell(valueCell);
-  const styleSelectedCell = indexCell === selectedCell ? 'SelectedCell' : null;
+  render() {
+    const { selectedCell, indexCell, tableData } = this.props;
 
-  const renderValueCell = isEdit ? (
-    <input
-      autoFocus
-      onChange={handleChange}
-      defaultValue={formulaCell || valueCell}
-    />
-  ) : (
-    correctValueCell
-  );
+    if (Object.keys(tableData).length === 0) return null;
 
-  return (
-    <td
-      className={styleSelectedCell}
-      onClick={handleClick}
-      onDoubleClick={handleDoubleClick}
-    >
-      {renderValueCell}
-    </td>
-  );
-};
+    const isSelectedCell = indexCell === selectedCell;
+    const correctValueCell = this.generateValueCell();
+    const styleSelectedCell = isSelectedCell ? 'SelectedCell' : null;
+
+    return (
+      <td
+        className={styleSelectedCell}
+        onClick={this.handleClick}
+        onDoubleClick={this.handleDoubleClick}
+      >
+        {correctValueCell}
+      </td>
+    );
+  }
+}
 
 Cell.propTypes = {
   indexCell: PropTypes.string,
+  selectedCell: PropTypes.string,
+  tableData: PropTypes.object,
+  setCellData: PropTypes.func,
+  setSelectedCell: PropTypes.func,
 };
 
-export default Cell;
+const mapStateToProps = (state) => ({
+  selectedCell: state.selectedCell,
+  tableData: state.tableData,
+});
+
+export default connect(mapStateToProps, { setSelectedCell, setCellData })(Cell);
