@@ -8,8 +8,8 @@ import './SelectTypeData.scss';
 const SelectTypeData = () => {
   const dispatch = useDispatch();
   const { selectedCell, tableData } = useSelector((store) => store);
-  const { type } = tableData[selectedCell] || 'string';
-  const { currency } = tableData[selectedCell] || '';
+  const type = tableData[selectedCell]?.type || 'string';
+  const currency = tableData[selectedCell]?.currency || '';
   const isCurrency =
     tableData[selectedCell] && tableData[selectedCell].type === 'currency';
 
