@@ -63,7 +63,9 @@ class Cell extends Component {
         this.updateCellData(value, indexCell);
       }
 
-      this.updateFormulasData();
+      setTimeout(() => {
+        this.updateFormulasData();
+      }, 0);
     }
 
     // изменился тип ячейки
