@@ -1,0 +1,22 @@
+{
+  "files": {
+    "main.css": "/excel-table-react/static/css/main.01bcdf17.chunk.css",
+    "main.js": "/excel-table-react/static/js/main.ff0cf332.chunk.js",
+    "main.js.map": "/excel-table-react/static/js/main.ff0cf332.chunk.js.map",
+    "runtime-main.js": "/excel-table-react/static/js/runtime-main.6ece010d.js",
+    "runtime-main.js.map": "/excel-table-react/static/js/runtime-main.6ece010d.js.map",
+    "static/js/2.fb1a2971.chunk.js": "/excel-table-react/static/js/2.fb1a2971.chunk.js",
+    "static/js/2.fb1a2971.chunk.js.map": "/excel-table-react/static/js/2.fb1a2971.chunk.js.map",
+    "index.html": "/excel-table-react/index.html",
+    "precache-manifest.eee1f7b00b10bcec01a0c4715aa41a1d.js": "/excel-table-react/precache-manifest.eee1f7b00b10bcec01a0c4715aa41a1d.js",
+    "service-worker.js": "/excel-table-react/service-worker.js",
+    "static/css/main.01bcdf17.chunk.css.map": "/excel-table-react/static/css/main.01bcdf17.chunk.css.map",
+    "static/js/2.fb1a2971.chunk.js.LICENSE.txt": "/excel-table-react/static/js/2.fb1a2971.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.6ece010d.js",
+    "static/js/2.fb1a2971.chunk.js",
+    "static/css/main.01bcdf17.chunk.css",
+    "static/js/main.ff0cf332.chunk.js"
+  ]
+}
